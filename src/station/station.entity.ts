@@ -1,4 +1,6 @@
-import { BaseEntity, Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { BaseEntity, Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Country } from "./country.entity";
+import { Region } from "./region.entity";
 import { EEnergyType } from "./station-energyType.enum";
 
 
@@ -18,8 +20,13 @@ export class Station extends BaseEntity{
     supportGovernment: string;
     @Column()
     exploitationStart: Date;
-    @Column()
-    countryId: number;
+    
+    @ManyToOne(()=> Country, country => country.stations)
+    country: Country;
+
+    @ManyToOne(() => Region, region => region.stations)
+    region: Region;
+
     @Column()
     regionId: number;
 }

@@ -1,11 +1,12 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Query, UsePipes, ValidationPipe } from '@nestjs/common';
-import { CreateStationDto } from './dto/create-station.dto';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
 import { GetStationFilterDto } from './dto/get-station-filter.dto';
 import { EEnergyType } from './station-energyType.enum';
 import { Station } from './station.entity';
 import { StationService } from './station.service'
 
 @Controller('station')
+@UseGuards(AuthGuard())
 export class StationController {
 
     constructor(private stationService: StationService) {
