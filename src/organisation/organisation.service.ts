@@ -1,10 +1,12 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Organisation } from './dto/organisation.entity';
 import { OrganisationRepository } from './organisation.repository';
 
 @Injectable()
 export class OrganisationService {
+    private logger = new Logger('OrganisationService');
+
     constructor(@InjectRepository(OrganisationRepository)
     private organisationRepository: OrganisationRepository) { }
 

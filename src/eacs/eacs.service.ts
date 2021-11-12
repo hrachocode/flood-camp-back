@@ -1,10 +1,12 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { EACs } from './dto/eacs.entity';
 import { EACsRepository } from './eacs.repository';
 
 @Injectable()
 export class EACsService {
+
+    private logger = new Logger('EACsService');
 
     constructor(@InjectRepository(EACsRepository)
     private eacsRepository: EACsRepository) { }

@@ -13,20 +13,15 @@ export class Station extends BaseEntity{
     @Column()
     name: string;
     @Column()
-    energyType : EEnergyType;
+    stationEnergyType : EEnergyType;
     @Column()
     placement: string;
     @Column()
     supportGovernment: string;
     @Column()
     exploitationStart: Date;
-    
-    @ManyToOne(()=> Country, country => country.stations)
-    country: Country;
-
-    @ManyToOne(() => Region, region => region.stations)
-    region: Region;
-
     @Column()
-    regionId: number;
+    countryId: Number;
+    @Column()
+    regionId: Number;
 }

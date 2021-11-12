@@ -1,9 +1,10 @@
-import { Body, Controller, Delete, Get, Param, Post, UsePipes, ValidationPipe } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Logger, Param, Post, UsePipes, ValidationPipe } from '@nestjs/common';
 import { EACs } from './dto/eacs.entity';
 import { EACsService } from './eacs.service';
 
 @Controller('eacs')
 export class EACsController {
+    private logger = new Logger('EACsController');
 
     constructor(private eacsService: EACsService) {
 

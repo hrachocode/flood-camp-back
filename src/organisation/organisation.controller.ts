@@ -1,9 +1,10 @@
-import { Body, Controller, Delete, Get, Param, Post, Query, UsePipes, ValidationPipe } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Logger, Param, Post, Query, UsePipes, ValidationPipe } from '@nestjs/common';
 import { Organisation } from './dto/organisation.entity';
 import { OrganisationService } from './organisation.service';
 
 @Controller('organisation')
 export class OrganisationController {
+    private logger = new Logger('OrganisationController');
 
     constructor(private organisationService: OrganisationService) {
 

@@ -15,6 +15,11 @@ export class User extends BaseEntity {
     password: string;
 
     @Column()
+    address: string;
+    @Column()
+    privateKey: string;
+
+    @Column()
     salt: string
 
     async validatePassword(password: string): Promise<boolean> {

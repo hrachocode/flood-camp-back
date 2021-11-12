@@ -1,6 +1,7 @@
 
-export enum EEnergyType {
+export enum     EEnergyType {
     SOLAR = 'SOLAR',
     WIND = 'WIND',
-    HYDRO = 'HYDRO'
+    HYDRO = 'HYDRO',
+    HYDROGEN = 'HYDROGEN'
 }

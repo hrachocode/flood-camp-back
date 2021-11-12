@@ -13,4 +13,4 @@ import { EACsService } from './eacs.service';
   controllers: [EACsController],
   providers: [EACsService]
 })
-export class EACsModule {}
+export class EACsModule { }

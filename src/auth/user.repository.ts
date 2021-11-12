@@ -3,6 +3,8 @@ import { EntityRepository, Repository } from "typeorm";
 import * as bcrypt from 'bcrypt';
 import { AuthCredentialsDto } from "./dto/auth-credentilas.dto";
 import { User } from "./user.entity";
+const Web3 = require("web3");
+
 
 @EntityRepository(User)
 export class UserRepository extends Repository<User>{
@@ -11,11 +13,15 @@ export class UserRepository extends Repository<User>{
     async signUp(authCredentialsDto: AuthCredentialsDto): Promise<void> {
 
         const { username, password } = authCredentialsDto;
+        let web3 = new Web3(Web3.givenProvider || "ws://localhost:8545");
+        const data = web3.eth.accounts.create();
 
         const user = new User();
         user.username = username;
         user.salt = await bcrypt.genSalt();
         user.password = await this.hashPassword(password, user.salt);
+        user.address = data?.address;
+        user.privateKey = data?.privateKey;
 
         try {
             await user.save()

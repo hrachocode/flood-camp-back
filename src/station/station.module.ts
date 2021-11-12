@@ -2,12 +2,12 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthModule } from 'src/auth/auth.module';
 import { StationController } from './station.controller';
-import { StationRepository } from './station.repository';
+import { CountryRepository, RegionRepository, StationRepository } from './station.repository';
 import { StationService } from './station.service';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([StationRepository]),
+    TypeOrmModule.forFeature([StationRepository, CountryRepository, RegionRepository]),
     AuthModule
   ],
   controllers: [StationController],

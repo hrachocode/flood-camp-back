@@ -8,7 +8,4 @@ export class Region extends BaseEntity{
     id: number;
     @Column()
     name: string;
-
-    @OneToMany(() =>Station, station =>station.region)
-    stations: Station[];
 }
