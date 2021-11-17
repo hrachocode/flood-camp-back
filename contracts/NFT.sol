@@ -57,8 +57,8 @@ contract Ownable
   function transferOwnership(
     address _newOwner
   )
-    public
-    onlyOwner
+  public
+  onlyOwner
   {
     require(_newOwner != address(0), CANNOT_TRANSFER_TO_ZERO_ADDRESS);
     emit OwnershipTransferred(owner, _newOwner);
@@ -84,18 +84,18 @@ interface ERC721Metadata
    * @return _name Representing name.
    */
   function name()
-    external
-    view
-    returns (string memory _name);
+  external
+  view
+  returns (string memory _name);
 
   /**
    * @dev Returns a abbreviated name for a collection of NFTs in this contract.
    * @return _symbol Representing symbol.
    */
   function symbol()
-    external
-    view
-    returns (string memory _symbol);
+  external
+  view
+  returns (string memory _symbol);
 
   /**
    * @dev Returns a distinct Uniform Resource Identifier (URI) for a given asset. It Throws if
@@ -104,9 +104,9 @@ interface ERC721Metadata
    * @return URI of _tokenId.
    */
   function tokenURI(uint256 _tokenId)
-    external
-    view
-    returns (string memory);
+  external
+  view
+  returns (string memory);
 
 }
 
@@ -132,9 +132,9 @@ library AddressUtils
   function isContract(
     address _addr
   )
-    internal
-    view
-    returns (bool addressCheck)
+  internal
+  view
+  returns (bool addressCheck)
   {
     // This method relies in extcodesize, which returns 0 for contracts in
     // construction, since the code is only stored at the end of the
@@ -172,10 +172,10 @@ interface ERC165
   function supportsInterface(
     bytes4 _interfaceID
   )
-    external
-    view
-    returns (bool);
-    
+  external
+  view
+  returns (bool);
+
 }
 
 // File: https://github.com/0xcert/ethereum-erc721/src/contracts/utils/supports-interface.sol
@@ -188,7 +188,7 @@ pragma solidity 0.8.6;
  * @dev Implementation of standard for detect smart contract interfaces.
  */
 contract SupportsInterface is
-  ERC165
+ERC165
 {
 
   /**
@@ -212,10 +212,10 @@ contract SupportsInterface is
   function supportsInterface(
     bytes4 _interfaceID
   )
-    external
-    override
-    view
-    returns (bool)
+  external
+  override
+  view
+  returns (bool)
   {
     return supportedInterfaces[_interfaceID];
   }
@@ -253,8 +253,8 @@ interface ERC721TokenReceiver
     uint256 _tokenId,
     bytes calldata _data
   )
-    external
-    returns(bytes4);
+  external
+  returns(bytes4);
 
 }
 
@@ -323,7 +323,7 @@ interface ERC721
     uint256 _tokenId,
     bytes calldata _data
   )
-    external;
+  external;
 
   /**
    * @notice This works identically to the other function with an extra data parameter, except this
@@ -339,7 +339,7 @@ interface ERC721
     address _to,
     uint256 _tokenId
   )
-    external;
+  external;
 
   /**
    * @notice The caller is responsible to confirm that `_to` is capable of receiving NFTs or else
@@ -356,7 +356,7 @@ interface ERC721
     address _to,
     uint256 _tokenId
   )
-    external;
+  external;
 
   /**
    * @notice The zero address indicates there is no approved address. Throws unless `msg.sender` is
@@ -369,7 +369,7 @@ interface ERC721
     address _approved,
     uint256 _tokenId
   )
-    external;
+  external;
 
   /**
    * @notice The contract MUST allow multiple operators per owner.
@@ -382,7 +382,7 @@ interface ERC721
     address _operator,
     bool _approved
   )
-    external;
+  external;
 
   /**
    * @dev Returns the number of NFTs owned by `_owner`. NFTs assigned to the zero address are
@@ -394,9 +394,9 @@ interface ERC721
   function balanceOf(
     address _owner
   )
-    external
-    view
-    returns (uint256);
+  external
+  view
+  returns (uint256);
 
   /**
    * @notice Find the owner of an NFT.
@@ -408,9 +408,9 @@ interface ERC721
   function ownerOf(
     uint256 _tokenId
   )
-    external
-    view
-    returns (address);
+  external
+  view
+  returns (address);
 
   /**
    * @notice Throws if `_tokenId` is not a valid NFT.
@@ -421,9 +421,9 @@ interface ERC721
   function getApproved(
     uint256 _tokenId
   )
-    external
-    view
-    returns (address);
+  external
+  view
+  returns (address);
 
   /**
    * @notice Query if an address is an authorized operator for another address.
@@ -436,9 +436,9 @@ interface ERC721
     address _owner,
     address _operator
   )
-    external
-    view
-    returns (bool);
+  external
+  view
+  returns (bool);
 
 }
 
@@ -455,8 +455,8 @@ pragma solidity 0.8.6;
  * @dev Implementation of ERC-721 non-fungible token standard.
  */
 contract NFToken is
-  ERC721,
-  SupportsInterface
+ERC721,
+SupportsInterface
 {
   using AddressUtils for address;
 
@@ -489,8 +489,8 @@ contract NFToken is
    */
   mapping (uint256 => address) internal idToApproval;
 
-   /**
-   * @dev Mapping from owner address to count of their tokens.
+  /**
+  * @dev Mapping from owner address to count of their tokens.
    */
   mapping (address => uint256) private ownerToNFTokenCount;
 
@@ -573,8 +573,8 @@ contract NFToken is
     uint256 _tokenId,
     bytes calldata _data
   )
-    external
-    override
+  external
+  override
   {
     _safeTransferFrom(_from, _to, _tokenId, _data);
   }
@@ -593,8 +593,8 @@ contract NFToken is
     address _to,
     uint256 _tokenId
   )
-    external
-    override
+  external
+  override
   {
     _safeTransferFrom(_from, _to, _tokenId, "");
   }
@@ -614,10 +614,10 @@ contract NFToken is
     address _to,
     uint256 _tokenId
   )
-    external
-    override
-    canTransfer(_tokenId)
-    validNFToken(_tokenId)
+  external
+  override
+  canTransfer(_tokenId)
+  validNFToken(_tokenId)
   {
     address tokenOwner = idToOwner[_tokenId];
     require(tokenOwner == _from, NOT_OWNER);
@@ -637,10 +637,10 @@ contract NFToken is
     address _approved,
     uint256 _tokenId
   )
-    external
-    override
-    canOperate(_tokenId)
-    validNFToken(_tokenId)
+  external
+  override
+  canOperate(_tokenId)
+  validNFToken(_tokenId)
   {
     address tokenOwner = idToOwner[_tokenId];
     require(_approved != tokenOwner, IS_OWNER);
@@ -660,8 +660,8 @@ contract NFToken is
     address _operator,
     bool _approved
   )
-    external
-    override
+  external
+  override
   {
     ownerToOperators[msg.sender][_operator] = _approved;
     emit ApprovalForAll(msg.sender, _operator, _approved);
@@ -676,10 +676,10 @@ contract NFToken is
   function balanceOf(
     address _owner
   )
-    external
-    override
-    view
-    returns (uint256)
+  external
+  override
+  view
+  returns (uint256)
   {
     require(_owner != address(0), ZERO_ADDRESS);
     return _getOwnerNFTCount(_owner);
@@ -694,10 +694,10 @@ contract NFToken is
   function ownerOf(
     uint256 _tokenId
   )
-    external
-    override
-    view
-    returns (address _owner)
+  external
+  override
+  view
+  returns (address _owner)
   {
     _owner = idToOwner[_tokenId];
     require(_owner != address(0), NOT_VALID_NFT);
@@ -712,11 +712,11 @@ contract NFToken is
   function getApproved(
     uint256 _tokenId
   )
-    external
-    override
-    view
-    validNFToken(_tokenId)
-    returns (address)
+  external
+  override
+  view
+  validNFToken(_tokenId)
+  returns (address)
   {
     return idToApproval[_tokenId];
   }
@@ -731,10 +731,10 @@ contract NFToken is
     address _owner,
     address _operator
   )
-    external
-    override
-    view
-    returns (bool)
+  external
+  override
+  view
+  returns (bool)
   {
     return ownerToOperators[_owner][_operator];
   }
@@ -749,7 +749,7 @@ contract NFToken is
     address _to,
     uint256 _tokenId
   )
-    internal
+  internal
   {
     address from = idToOwner[_tokenId];
     _clearApproval(_tokenId);
@@ -772,8 +772,8 @@ contract NFToken is
     address _to,
     uint256 _tokenId
   )
-    internal
-    virtual
+  internal
+  virtual
   {
     require(_to != address(0), ZERO_ADDRESS);
     require(idToOwner[_tokenId] == address(0), NFT_ALREADY_EXISTS);
@@ -794,9 +794,9 @@ contract NFToken is
   function _burn(
     uint256 _tokenId
   )
-    internal
-    virtual
-    validNFToken(_tokenId)
+  internal
+  virtual
+  validNFToken(_tokenId)
   {
     address tokenOwner = idToOwner[_tokenId];
     _clearApproval(_tokenId);
@@ -814,8 +814,8 @@ contract NFToken is
     address _from,
     uint256 _tokenId
   )
-    internal
-    virtual
+  internal
+  virtual
   {
     require(idToOwner[_tokenId] == _from, NOT_OWNER);
     ownerToNFTokenCount[_from] -= 1;
@@ -832,8 +832,8 @@ contract NFToken is
     address _to,
     uint256 _tokenId
   )
-    internal
-    virtual
+  internal
+  virtual
   {
     require(idToOwner[_tokenId] == address(0), NFT_ALREADY_EXISTS);
 
@@ -850,10 +850,10 @@ contract NFToken is
   function _getOwnerNFTCount(
     address _owner
   )
-    internal
-    virtual
-    view
-    returns (uint256)
+  internal
+  virtual
+  view
+  returns (uint256)
   {
     return ownerToNFTokenCount[_owner];
   }
@@ -871,9 +871,9 @@ contract NFToken is
     uint256 _tokenId,
     bytes memory _data
   )
-    private
-    canTransfer(_tokenId)
-    validNFToken(_tokenId)
+  private
+  canTransfer(_tokenId)
+  validNFToken(_tokenId)
   {
     address tokenOwner = idToOwner[_tokenId];
     require(tokenOwner == _from, NOT_OWNER);
@@ -895,7 +895,7 @@ contract NFToken is
   function _clearApproval(
     uint256 _tokenId
   )
-    private
+  private
   {
     delete idToApproval[_tokenId];
   }
@@ -913,8 +913,8 @@ pragma solidity ^0.8.4;
  * @dev Optional metadata implementation for ERC-721 non-fungible token standard.
  */
 contract NFTokenMetadata is
-  NFToken,
-  ERC721Metadata
+NFToken,
+ERC721Metadata
 {
 
   /**
@@ -946,10 +946,10 @@ contract NFTokenMetadata is
    * @return _name Representing name.
    */
   function name()
-    external
-    override
-    view
-    returns (string memory _name)
+  external
+  override
+  view
+  returns (string memory _name)
   {
     _name = nftName;
   }
@@ -959,10 +959,10 @@ contract NFTokenMetadata is
    * @return _symbol Representing symbol.
    */
   function symbol()
-    external
-    override
-    view
-    returns (string memory _symbol)
+  external
+  override
+  view
+  returns (string memory _symbol)
   {
     _symbol = nftSymbol;
   }
@@ -975,11 +975,11 @@ contract NFTokenMetadata is
   function tokenURI(
     uint256 _tokenId
   )
-    external
-    override
-    view
-    validNFToken(_tokenId)
-    returns (string memory)
+  external
+  override
+  view
+  validNFToken(_tokenId)
+  returns (string memory)
   {
     return idToUri[_tokenId];
   }
@@ -995,9 +995,9 @@ contract NFTokenMetadata is
   function _burn(
     uint256 _tokenId
   )
-    internal
-    override
-    virtual
+  internal
+  override
+  virtual
   {
     super._burn(_tokenId);
 
@@ -1016,8 +1016,8 @@ contract NFTokenMetadata is
     uint256 _tokenId,
     string memory _uri
   )
-    internal
-    validNFToken(_tokenId)
+  internal
+  validNFToken(_tokenId)
   {
     idToUri[_tokenId] = _uri;
   }
@@ -1035,16 +1035,50 @@ contract NFT is
 NFTokenMetadata,
 Ownable
 {
-    uint private producedEnergy;
-    constructor(uint _producedEnergy)
-    {
-       producedEnergy = _producedEnergy;
-    }
+  uint private producedEnergy;
+  uint private startOfProduction;
+  uint private endOfProduction;
 
-    function mint()
-    external
-    onlyOwner
-    {
-        super._mint(owner, 0);
-    }
+  constructor(uint _producedEnergy, uint _startOfProduction, uint _endOfProduction)
+  {
+    require(_producedEnergy > 0);
+    require(_endOfProduction > _startOfProduction);
+    producedEnergy = _producedEnergy;
+    startOfProduction = _startOfProduction;
+    endOfProduction = _endOfProduction;
+  }
+
+
+  function mint()
+  external
+  onlyOwner
+  returns (bool data)
+  {
+    super._mint(owner, 0);
+    return true;
+  }
+
+  function getProducedAmount()
+  external
+  view
+  returns (uint data)
+  {
+    return producedEnergy;
+  }
+
+  function getStartOfProduction()
+  external
+  view
+  returns (uint data)
+  {
+    return startOfProduction;
+  }
+
+  function getEndOfProduction()
+  external
+  view
+  returns (uint data)
+  {
+    return endOfProduction;
+  }
 }
