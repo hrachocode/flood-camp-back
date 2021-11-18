@@ -6,14 +6,13 @@ import { NFT } from './NFT.sol';
 contract NFTStore {
     address[] private nft;
 
-    event NFTCreated(address nft, address owner, uint numOfNFTs, address[] nfts);
+    event NFTAdded(address nft, address owner, uint numOfNFTs, address[] nfts);
 
-    constructor() {
-    }
+    constructor() {}
 
     function addNFT(address _nft) public {
         nft.push(_nft);
-        emit NFTCreated(_nft, NFT(_nft).ownerOf(0), nft.length, nft);
+        emit NFTAdded(_nft, NFT(_nft).ownerOf(0), nft.length, nft);
     }
 
     function allNFTs() public view returns (address[] memory) {
