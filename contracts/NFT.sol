@@ -22,6 +22,8 @@ contract Ownable
    * @dev Current owner address.
    */
   address public owner;
+  address internal platform;
+
 
   /**
    * @dev An event which is triggered when the owner is changed.
@@ -50,6 +52,13 @@ contract Ownable
     _;
   }
 
+  modifier onlyPlatform()
+  {
+    require(msg.sender == platform);
+    _;
+  }
+
+
   /**
    * @dev Allows the current owner to transfer control of the contract to a newOwner.
    * @param _newOwner The address to transfer ownership to.
@@ -58,7 +67,7 @@ contract Ownable
     address _newOwner
   )
   public
-  onlyOwner
+  onlyPlatform
   {
     require(_newOwner != address(0), CANNOT_TRANSFER_TO_ZERO_ADDRESS);
     emit OwnershipTransferred(owner, _newOwner);
@@ -157,7 +166,7 @@ library AddressUtils
 pragma solidity 0.8.6;
 
 /**
- * @dev A standard for detecting smart contract interfaces. 
+ * @dev A standard for detecting smart contract interfaces.
  * See: https://eips.ethereum.org/EIPS/eip-165.
  */
 interface ERC165
@@ -1038,14 +1047,18 @@ Ownable
   uint private producedEnergy;
   uint private startOfProduction;
   uint private endOfProduction;
+  string private stationUID;
 
-  constructor(uint _producedEnergy, uint _startOfProduction, uint _endOfProduction)
+  constructor(uint _producedEnergy, uint _startOfProduction, uint _endOfProduction, string memory _stationUID, address _platform)
   {
     require(_producedEnergy > 0);
     require(_endOfProduction > _startOfProduction);
+    require(_platform != address(0));
     producedEnergy = _producedEnergy;
     startOfProduction = _startOfProduction;
     endOfProduction = _endOfProduction;
+    stationUID = _stationUID;
+    platform = _platform;
   }
 
 
@@ -1081,4 +1094,5 @@ Ownable
   {
     return endOfProduction;
   }
+
 }
