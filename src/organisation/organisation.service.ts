@@ -1,5 +1,6 @@
 import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { User } from 'src/auth/user.entity';
 import { Organisation } from './dto/organisation.entity';
 import { OrganisationRepository } from './organisation.repository';
 
@@ -10,19 +11,21 @@ export class OrganisationService {
     constructor(@InjectRepository(OrganisationRepository)
     private organisationRepository: OrganisationRepository) { }
 
-    public async getAllOrganisations(): Promise<Organisation[]> {
+    public async getAllOrganisations(user: User): Promise<Organisation[]> {
 
 
         const query = this.organisationRepository.createQueryBuilder('Organisation');
+
+        query.where('eacs.userId = :userId', { userId: user.id })
 
         const organisations = await query.getMany();
 
         return organisations;
     }
 
-    public async getOrganisationById(id: number): Promise<Organisation> {
+    public async getOrganisationById(id: number, user: User): Promise<Organisation> {
 
-        const found = await this.organisationRepository.findOne(id);
+        const found = await this.organisationRepository.findOne({ where: { id, userId: user.id } });
 
         if (!found) {
             throw new NotFoundException(`Organisation with ${id} not found `);
@@ -32,19 +35,22 @@ export class OrganisationService {
 
     }
 
-    public async createOrganisation(OrganisationInput: Organisation): Promise<Organisation> {
+    public async createOrganisation(OrganisationInput: Organisation, user: User): Promise<Organisation> {
 
         let organisation = this.organisationRepository.create(OrganisationInput);
 
+        organisation.user = user;
+
         await organisation.save();
+        delete organisation.user;
 
         return organisation;
 
     }
 
-    public async deleteOrganisation(id: number): Promise<void> {
+    public async deleteOrganisation(id: number, user: User): Promise<void> {
 
-        const result = await this.organisationRepository.delete(id);
+        const result = await this.organisationRepository.delete({ id, userId: user.id });
 
         if (result.affected === 0) {
             throw new NotFoundException(`Organisation with ID "${id}" not found`)

@@ -1,5 +1,8 @@
 import { Body, Controller, Delete, Get, Logger, Param, Patch, Post, Query, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { GetUser } from 'src/auth/get-user.decorator';
+import { User } from 'src/auth/user.entity';
 import { Country } from './country.entity';
 import { Region } from './region.entity';
 import { EEnergyType } from './station-energyType.enum';
@@ -7,6 +10,7 @@ import { Station } from './station.entity';
 import { StationService } from './station.service'
 
 @Controller('station')
+@ApiTags('Stations')
 @UseGuards(AuthGuard())
 export class StationController {
     private logger = new Logger('StationController');
@@ -14,7 +18,6 @@ export class StationController {
 
     }
 
-    
     @Get('/region')
     getAllRegions(): Promise<Region[]> {
         return this.stationService.getAllRegions();
@@ -26,38 +29,39 @@ export class StationController {
     }
 
     @Get()
-    getAllStations(): Promise<Station[]> {
+    getAllStations(@GetUser() user: User): Promise<Station[]> {
 
         this.logger.verbose(`Retrieving all Stations`)
-        return this.stationService.getAllStations();
+        return this.stationService.getAllStations(user);
     }
 
     @Get(':id')
-    getStationById(@Param('id') id: number): Promise<Station> {
+    getStationById(@Param('id') id: number, @GetUser() user: User): Promise<Station> {
         this.logger.verbose(`Retrieving Station by ID   + ${id}`)
-        return this.stationService.getStationById(id);
+        return this.stationService.getStationById(id, user);
     }
 
 
     @Post()
     @UsePipes(ValidationPipe)
-    createStation(@Body() createStationDto: Station): Promise<Station> {
+    // @ApiBearerAuth('access-token')
+    createStation(@Body() createStationDto: Station, @GetUser() user: User): Promise<Station> {
 
         this.logger.verbose(`Creating new Station. Data : ${JSON.stringify(createStationDto)}`);
-        return this.stationService.createStation(createStationDto);
+        return this.stationService.createStation(createStationDto, user);
     }
 
     @Delete(':id')
-    deleteStation(@Param('id') id: number): Promise<void> {
+    deleteStation(@Param('id') id: number, @GetUser() user: User): Promise<void> {
         this.logger.verbose(`Deleting Station by ID   + ${id}`)
-        return this.stationService.deleteStation(id);
+        return this.stationService.deleteStation(id, user);
     }
 
 
     @Patch(':id/energyType')
-    updateStationType(@Param('id') id: number, @Body('energyType') energyType: EEnergyType): Promise<Station> {
+    updateStationType(@Param('id') id: number, @Body('energyType') energyType: EEnergyType, @GetUser() user: User): Promise<Station> {
         this.logger.verbose(`Updating  StationType`)
-        return this.stationService.updateStationType(id, energyType);
+        return this.stationService.updateStationType(id, energyType, user);
     }
 
     @Post('/country')

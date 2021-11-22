@@ -1,5 +1,6 @@
 import { Injectable, InternalServerErrorException, Logger, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { User } from 'src/auth/user.entity';
 import { Country } from './country.entity';
 import { GetStationFilterDto } from './dto/get-station-filter.dto';
 import { Region } from './region.entity';
@@ -17,14 +18,13 @@ export class StationService {
         @InjectRepository(CountryRepository)
         private countryRepository: CountryRepository,
         @InjectRepository(RegionRepository)
-        private regionRepository: RegionRepository) {}
+        private regionRepository: RegionRepository) { }
 
-    public async getAllStations(): Promise<Station[]> {
+    public async getAllStations(user: User): Promise<Station[]> {
 
-      //  const { energyType, search } = filterDto;
+        //  const { energyType, search } = filterDto;
 
         const query = this.stationRepository.createQueryBuilder('station');
-
         // if (energyType) {
         //     query.andWhere('station.energyType = :energyType', { energyType })
         // }
@@ -34,6 +34,7 @@ export class StationService {
         // }
 
         try {
+            query.where('station.userId = :userId', { userId: user.id })
             const stations = await query.getMany();
 
             return stations;
@@ -45,9 +46,9 @@ export class StationService {
 
     }
 
-    public async getStationById(id: number): Promise<Station> {
+    public async getStationById(id: number, user: User): Promise<Station> {
 
-        const found = await this.stationRepository.findOne(id);
+        const found = await this.stationRepository.findOne({ where: { id, userId: user.id } });
 
         if (!found) {
             this.logger.error(`Failed to get station by ID ${id}`)
@@ -60,14 +61,14 @@ export class StationService {
 
 
 
-    public async createStation(stationInput: Station): Promise<Station> {
+    public async createStation(stationInput: Station, user: User): Promise<Station> {
 
         let station = this.stationRepository.create(stationInput);
-
+     
         try {
-
+            station.user = user;
             await station.save();
-
+            delete station.user;
         } catch (error) {
 
             this.logger.error(`Failed to create a station`, error.stack)
@@ -80,9 +81,9 @@ export class StationService {
     }
 
 
-    public async deleteStation(id: number): Promise<void> {
+    public async deleteStation(id: number, user: User): Promise<void> {
 
-        const result = await this.stationRepository.delete(id);
+        const result = await this.stationRepository.delete({ id, userId: user.id });
 
         if (result.affected === 0) {
             this.logger.error(`Failed to get station by ID ${id}`)
@@ -91,11 +92,11 @@ export class StationService {
 
     }
 
-    
 
-    public async updateStationType(id: number, energyType: EEnergyType): Promise<Station> {
 
-        const station = await this.getStationById(id);
+    public async updateStationType(id: number, energyType: EEnergyType, user: User): Promise<Station> {
+
+        const station = await this.getStationById(id, user);
         station.stationEnergyType = energyType;
 
         try {
@@ -129,7 +130,7 @@ export class StationService {
 
     }
 
-    
+
     public async deleteCountry(id: number): Promise<void> {
 
         const result = await this.countryRepository.delete(id);
