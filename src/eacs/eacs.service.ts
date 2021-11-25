@@ -1,9 +1,11 @@
-import { Injectable, Logger, NotFoundException } from '@nestjs/common';
+import { Injectable, InternalServerErrorException, Logger, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/auth/user.entity';
 import { EACs } from './dto/eacs.entity';
-import { EACsRepository } from './eacs.repository';
+import { AskRepository, EACsRepository } from './eacs.repository';
 import * as Likelib from "./../../likelib_uton2/likelib-js/likelib.js"
+import { SellType } from './dto/sellType.dto';
+import { Ask } from './dto/ask.entity';
 const NFTArtifact = require("./../../likelib_uton2/uton2/truffle/build/contracts/NFT.json");
 
 @Injectable()
@@ -12,7 +14,9 @@ export class EACsService {
     private logger = new Logger('EACsService');
 
     constructor(@InjectRepository(EACsRepository)
-    private eacsRepository: EACsRepository) { }
+    private eacsRepository: EACsRepository,
+        @InjectRepository(AskRepository)
+        private askRepository: AskRepository) { }
 
     public async getAllEACs(user: User): Promise<EACs[]> {
 
@@ -20,7 +24,27 @@ export class EACsService {
         const query = this.eacsRepository.createQueryBuilder('eacs');
         query.where('eacs.userId = :userId', { userId: user.id })
 
-        const eacs = await query.getMany();
+        const eacs = await query.orderBy('eacs.id').getMany();
+
+        return eacs;
+    }
+
+    public async getAllAuctionEACs(user: User): Promise<EACs[]> {
+
+        const query = this.eacsRepository.createQueryBuilder('eacs');
+        query.where('eacs.userId != :userId AND eacs.isAuction  = :isAuction', { userId: user.id, isAuction: true })
+
+        const eacs = await query.orderBy('eacs.id').getMany();
+
+        return eacs;
+    }
+
+    public async getAllAskEACs(user: User): Promise<EACs[]> {
+
+        const query = this.eacsRepository.createQueryBuilder('eacs');
+        query.where('eacs.userId != :userId AND eacs.isAsk  = :isAsk', { userId: user.id, isAsk: true })
+
+        const eacs = await query.orderBy('eacs.id').getMany();
 
         return eacs;
     }
@@ -35,6 +59,24 @@ export class EACsService {
 
         return found;
 
+    }
+
+
+    public async updateEACsAskAuction(id: number, sellTypeDto: SellType, user: User): Promise<EACs> {
+        const updatedEACs = await this.getEACsById(id, user);
+
+        updatedEACs.isAuction = sellTypeDto?.isAuction;
+        updatedEACs.isAsk = sellTypeDto?.isAsk;
+        updatedEACs.price = sellTypeDto?.price;
+
+        try {
+            updatedEACs.save();
+        } catch (error) {
+            this.logger.error(`Failed to update  isAuction and price `, error.stack)
+            throw new InternalServerErrorException();
+        }
+
+        return updatedEACs;
     }
 
     public async createEACs(eacsInput: EACs, user: User): Promise<EACs> {
@@ -128,6 +170,25 @@ export class EACsService {
         if (result.affected === 0) {
             throw new NotFoundException(`EACs with ID "${id}" not found`)
         }
+
+    }
+
+    public async createAsk(askInput: Ask): Promise<Ask> {
+
+        let ask = this.askRepository.create(askInput);
+
+        try {
+
+            await ask.save();
+
+        } catch (error) {
+
+            this.logger.error(`Failed to create a ask`, error.stack)
+            throw new InternalServerErrorException();
+
+        }
+
+        return ask;
 
     }
 }
