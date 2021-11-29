@@ -1,4 +1,5 @@
-import { Body, Controller, Delete, Get, Logger, Param, Post, Query, UsePipes, ValidationPipe } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Logger, Param, Post, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
 import { ApiTags } from '@nestjs/swagger';
 import { GetUser } from 'src/auth/get-user.decorator';
 import { User } from 'src/auth/user.entity';
@@ -6,6 +7,7 @@ import { Organisation } from './dto/organisation.entity';
 import { OrganisationService } from './organisation.service';
 
 @Controller('organisation')
+@UseGuards(AuthGuard())
 @ApiTags('Organisation')
 export class OrganisationController {
     private logger = new Logger('OrganisationController');

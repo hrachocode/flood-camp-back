@@ -4,7 +4,7 @@ const NFTArtifact = require('./truffle/build/contracts/NFT.json');
 //const NFTStoreArtifact = require('./truffle/build/contracts/NFTStore.json');
 
 
-let lk = new Likelib("ws://91.229.218.238:50051");
+let lk = new Likelib("ws://node.eacsclover.ml:50051");
 const account = new Likelib.Account("2aef91bc6d2df7c41bd605caa267e8d357e18b741c4a785e06650d649d650409"); //private key
 //0x7BB1af1242c890F71d03822cC600fD31ddd541c5 // public key
 

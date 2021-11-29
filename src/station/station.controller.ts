@@ -10,8 +10,8 @@ import { Station } from './station.entity';
 import { StationService } from './station.service'
 
 @Controller('station')
-@ApiTags('Stations')
 @UseGuards(AuthGuard())
+@ApiTags('Stations')
 export class StationController {
     private logger = new Logger('StationController');
     constructor(private stationService: StationService) {
