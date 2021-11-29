@@ -4,8 +4,9 @@ import { User } from 'src/auth/user.entity';
 import { EACs } from './dto/eacs.entity';
 import { AskRepository, EACsRepository } from './eacs.repository';
 import * as Likelib from "./../../likelib_uton2/likelib-js/likelib.js"
-import { SellType } from './dto/sellType.dto';
+import { IsAskDto } from './dto/isAsk.dto';
 import { Ask } from './dto/ask.entity';
+import { BindsType } from './dto/bindsType.dto';
 const NFTArtifact = require("./../../likelib_uton2/uton2/truffle/build/contracts/NFT.json");
 
 @Injectable()
@@ -29,20 +30,11 @@ export class EACsService {
         return eacs;
     }
 
-    public async getAllAuctionEACs(user: User): Promise<EACs[]> {
-
-        const query = this.eacsRepository.createQueryBuilder('eacs');
-        query.where('eacs.userId != :userId AND eacs.isAuction  = :isAuction', { userId: user.id, isAuction: true })
-
-        const eacs = await query.orderBy('eacs.id').getMany();
-
-        return eacs;
-    }
 
     public async getAllAskEACs(user: User): Promise<EACs[]> {
 
         const query = this.eacsRepository.createQueryBuilder('eacs');
-        query.where('eacs.userId != :userId AND eacs.isAsk  = :isAsk', { userId: user.id, isAsk: true })
+        query.where('eacs.userId != :userId AND eacs.isAsk  = :isAsk AND eacs.isArchive  = :isArchive', { userId: user.id, isAsk: true, isArchive: false })
 
         const eacs = await query.orderBy('eacs.id').getMany();
 
@@ -54,27 +46,76 @@ export class EACsService {
         const found = await this.eacsRepository.findOne({ where: { id, userId: user.id } });
 
         if (!found) {
-            throw new NotFoundException(`EACs with ${id} not found `);
+            throw new NotFoundException(`EACs with ${id} and user ${user.id}  not found `);
         }
 
         return found;
 
     }
 
+    public async getBindEACsById(id: number, user: User): Promise<Ask[]> {
 
-    public async updateEACsAskAuction(id: number, sellTypeDto: SellType, user: User): Promise<EACs> {
+        const query = this.askRepository.createQueryBuilder('ask');
+        query.where('ask.eacsId = :eacsId', { eacsId: id })
+
+        const ask = await query.orderBy('ask.price', "DESC").getMany();
+
+        return ask;
+
+    }
+
+
+    public async getAskByEACsUserId(eacsId: number, userId: number): Promise<Ask> {
+
+        const found = await this.askRepository.findOne({ where: { eacsId: eacsId, userId: userId } });
+
+        return found;
+
+    }
+
+    public async bindAskEACs(bindsType: BindsType, user: User): Promise<Ask> {
+
+        const ask = await this.getAskByEACsUserId(bindsType.eacsId, user.id);
+
+
+        if (ask) {
+
+            ask.eacsId = bindsType.eacsId;
+            ask.userId = user.id;
+            ask.price = bindsType.price;
+            ask.userName = user.username;
+            await ask.save();
+        }
+
+        else {
+
+            let ask = this.askRepository.create({ eacsId: bindsType.eacsId, userId: user.id, userName: user.username, price: bindsType.price });
+            await ask.save();
+        }
+
+        return ask;
+
+    }
+
+
+
+    public async updateEACsAsk(id: number, isAskDto: IsAskDto, user: User): Promise<EACs> {
+
         const updatedEACs = await this.getEACsById(id, user);
 
-        updatedEACs.isAuction = sellTypeDto?.isAuction;
-        updatedEACs.isAsk = sellTypeDto?.isAsk;
-        updatedEACs.price = sellTypeDto?.price;
+        updatedEACs.isAsk = isAskDto?.isAsk;
+        updatedEACs.price = isAskDto?.price;
 
         try {
-            updatedEACs.save();
+
+            await updatedEACs.save();
+
+
         } catch (error) {
-            this.logger.error(`Failed to update  isAuction and price `, error.stack)
+            this.logger.error(`Failed to update  isAsk and price`, error.stack)
             throw new InternalServerErrorException();
         }
+
 
         return updatedEACs;
     }
@@ -190,5 +231,50 @@ export class EACsService {
 
         return ask;
 
+    }
+
+    public async getAskById(id: number): Promise<Ask> {
+
+        const found = await this.askRepository.findOne(id);
+
+        if (!found) {
+            throw new NotFoundException(`Ask with ${id}   not found `);
+        }
+
+        return found;
+
+    }
+
+    public async confirmAskEACs(id: number, user: User): Promise<EACs> {
+
+
+        const updatedBids = await this.getAskById(id);
+
+        const updatedEACs = await this.getEACsById(updatedBids.eacsId, user);
+        updatedEACs.isArchive = true;
+
+        try {
+
+            await updatedEACs.save();
+
+        } catch (error) {
+            this.logger.error(`Failed to update  Ask  archive`, error.stack)
+            throw new InternalServerErrorException();
+        }
+
+        try {
+
+            const query = this.askRepository.createQueryBuilder('ask');
+            await query.update()
+                .set({ isArchive: true })
+                .where(`eacsId = :eacsId`, { eacsId: updatedBids.eacsId })
+                .execute();
+
+        } catch (error) {
+            this.logger.error(`Failed to update  Ask  archive`, error.stack)
+            throw new InternalServerErrorException();
+        }
+
+        return updatedEACs;
     }
 }

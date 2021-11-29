@@ -1,5 +1,6 @@
 import { User } from "src/auth/user.entity";
-import { BaseEntity, Column, Entity, ManyToOne, PrimaryColumn, PrimaryGeneratedColumn } from "typeorm";
+import { BaseEntity, Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { Ask } from "./ask.entity";
 
 @Entity()
 export class EACs extends BaseEntity {
@@ -26,13 +27,16 @@ export class EACs extends BaseEntity {
   toAddress: string;
 
   @Column('boolean', { default: false })
-  isAuction: boolean;
+  isArchive: boolean;
 
   @Column('boolean', { default: false })
   isAsk: boolean;
 
   @Column('double precision', { default: 0 })
   price: number;
+
+  @OneToMany(type => Ask, ask => ask.eacs)
+  ask: Ask[];
 
   @ManyToOne(type => User, user => user.eacs, { eager: false })
   user: User;
