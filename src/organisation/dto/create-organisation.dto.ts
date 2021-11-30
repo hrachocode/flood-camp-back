@@ -2,14 +2,14 @@ import { IsNotEmpty, IsString, MaxLength } from "class-validator";
 
 export class CreateOrganisationDto {
 
-    @IsNotEmpty()
+    @IsNotEmpty({message : "Name should not be empty"})
     @IsString()
-    @MaxLength(50)
+    @MaxLength(50,{message:"Name must be shorter than or equal to 50 characters"})
     name: string;
 
-    @IsNotEmpty()
+    @IsNotEmpty({message : "Register Number should not be empty"})
     @IsString()
-    @MaxLength(50)
+    @MaxLength(50,{message:"Register Number must be shorter than or equal to 50 characters"})
     registerNumber: string;
 
 }

@@ -2,13 +2,13 @@ import { IsDate, IsNotEmpty, IsNumber } from "class-validator";
 
 export class CreateEACsDto {
 
-    @IsNotEmpty()
+    @IsNotEmpty({message : "Energy Start Date should not be empty"})
     creationEnergyStartDate: Date;
 
-    @IsNotEmpty()
+    @IsNotEmpty({message : "Energy End Date should not be empty"})
     creationEnergyEndDate: Date;
 
-    @IsNotEmpty()
+    @IsNotEmpty({message : "Energy Amount should not be empty"})
     @IsNumber()
     energyAmount: number;
 

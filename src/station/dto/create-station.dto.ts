@@ -2,30 +2,30 @@ import { IsDate, IsNotEmpty, IsNumber, IsString, MaxLength } from "class-validat
 
 export class CreateStationDto {
 
-    @IsNotEmpty()
+    @IsNotEmpty({ message: "Name should not be empty" })
     @IsString()
-    @MaxLength(50)
+    @MaxLength(50, { message: "Name must be shorter than or equal to 50 characters" })
     name: string;
 
-    @IsNotEmpty()
+    @IsNotEmpty({ message: "Placement should not be empty" })
     @IsString()
-    @MaxLength(80)
+    @MaxLength(50, { message: "Placement must be shorter than or equal to 50 characters" })
     placement: string;
 
-    @IsNotEmpty()
+    @IsNotEmpty({ message: "Government should not be empty" })
     @IsString()
-    @MaxLength(80)
+    @MaxLength(80, { message: "Placement must be shorter than or equal to 80 characters" })
     supportGovernment: string;
 
-    @IsNotEmpty()
+    @IsNotEmpty({message : "Exploitation Start should not be empty"})
     @IsDate()
     exploitationStart: Date;
 
-    @IsNotEmpty()
+    @IsNotEmpty({message:"Country should not be empty"})
     @IsNumber()
     countryId: number;
 
-    @IsNotEmpty()
+    @IsNotEmpty({message:"Region should not be empty"})
     @IsNumber()
     regionId: number;
 

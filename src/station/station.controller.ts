@@ -43,9 +43,8 @@ export class StationController {
 
 
     @Post()
-    @UsePipes(ValidationPipe)
     // @ApiBearerAuth('access-token')
-    createStation(@Body() createStationDto: Station, @GetUser() user: User): Promise<Station> {
+    createStation(@Body(ValidationPipe) createStationDto: Station, @GetUser() user: User): Promise<Station> {
 
         this.logger.verbose(`Creating new Station. Data : ${JSON.stringify(createStationDto)}`);
         return this.stationService.createStation(createStationDto, user);
@@ -65,8 +64,7 @@ export class StationController {
     }
 
     @Post('/country')
-    @UsePipes(ValidationPipe)
-    createCountry(@Body() createCountryDto: Country): Promise<Country> {
+    createCountry(@Body(ValidationPipe) createCountryDto: Country): Promise<Country> {
 
         this.logger.verbose(`Creating new Country. Data : ${JSON.stringify(createCountryDto)}`);
         return this.stationService.createCountry(createCountryDto);
@@ -87,8 +85,7 @@ export class StationController {
 
 
     @Post('/region')
-    @UsePipes(ValidationPipe)
-    createRegion(@Body() createRegionDto: Region): Promise<Region> {
+    createRegion(@Body(ValidationPipe) createRegionDto: Region): Promise<Region> {
 
         this.logger.verbose(`Creating new region. Data : ${JSON.stringify(createRegionDto)}`);
         return this.stationService.createRegion(createRegionDto);
