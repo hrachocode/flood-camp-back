@@ -7,6 +7,7 @@ import * as Likelib from "./../../likelib_uton2/likelib-js/likelib.js"
 import { IsAskDto } from './dto/isAsk.dto';
 import { Ask } from './dto/ask.entity';
 import { BindsType } from './dto/bindsType.dto';
+import { CreateEACsDto } from './dto/create-eacs.dto';
 const NFTArtifact = require("./../../likelib_uton2/uton2/truffle/build/contracts/NFT.json");
 
 @Injectable()
@@ -120,7 +121,7 @@ export class EACsService {
         return updatedEACs;
     }
 
-    public async createEACs(eacsInput: EACs, user: User): Promise<EACs> {
+    public async createEACs(eacsInput: CreateEACsDto, user: User): Promise<EACs> {
 
         let eacs = this.eacsRepository.create(eacsInput);
         eacs.user = user;

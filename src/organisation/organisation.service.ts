@@ -1,6 +1,7 @@
 import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/auth/user.entity';
+import { CreateOrganisationDto } from './dto/create-organisation.dto';
 import { Organisation } from './dto/organisation.entity';
 import { OrganisationRepository } from './organisation.repository';
 
@@ -35,9 +36,9 @@ export class OrganisationService {
 
     }
 
-    public async createOrganisation(OrganisationInput: Organisation, user: User): Promise<Organisation> {
+    public async createOrganisation(organisationInput: CreateOrganisationDto, user: User): Promise<Organisation> {
 
-        let organisation = this.organisationRepository.create(OrganisationInput);
+        let organisation = this.organisationRepository.create(organisationInput);
 
         organisation.user = user;
 

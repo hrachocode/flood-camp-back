@@ -3,6 +3,7 @@ import { AuthGuard } from '@nestjs/passport';
 import { ApiTags } from '@nestjs/swagger';
 import { GetUser } from 'src/auth/get-user.decorator';
 import { User } from 'src/auth/user.entity';
+import { CreateOrganisationDto } from './dto/create-organisation.dto';
 import { Organisation } from './dto/organisation.entity';
 import { OrganisationService } from './organisation.service';
 
@@ -29,8 +30,7 @@ export class OrganisationController {
 
 
     @Post()
-    @UsePipes(ValidationPipe)
-    createOrganisation(@Body() createOrganisationDto: Organisation, @GetUser() user: User): Promise<Organisation> {
+    createOrganisation(@Body(ValidationPipe) createOrganisationDto: CreateOrganisationDto, @GetUser() user: User): Promise<Organisation> {
         return this.organisationService.createOrganisation(createOrganisationDto, user);
     }
 

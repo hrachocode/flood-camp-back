@@ -5,6 +5,7 @@ import { GetUser } from 'src/auth/get-user.decorator';
 import { User } from 'src/auth/user.entity';
 import { Ask } from './dto/ask.entity';
 import { BindsType } from './dto/bindsType.dto';
+import { CreateEACsDto } from './dto/create-eacs.dto';
 import { EACs } from './dto/eacs.entity';
 import { IsAskDto } from './dto/isAsk.dto';
 import { EACsService } from './eacs.service';
@@ -42,8 +43,7 @@ export class EACsController {
     }
 
     @Post()
-    @UsePipes(ValidationPipe)
-    createEACs(@Body() createEACsDto: EACs, @GetUser() user: User): Promise<EACs> {
+    createEACs(@Body(ValidationPipe) createEACsDto: CreateEACsDto, @GetUser() user: User): Promise<EACs> {
 
         return this.eacsService.createEACs(createEACsDto, user);
     }
