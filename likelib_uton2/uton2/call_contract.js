@@ -7,7 +7,7 @@ function sleep() {
   while (new Date() < delay){}
 }
 
-let lk = new Likelib("ws://node.eacsclover.ml:50051");
+let lk = new Likelib("ws://node.eacsclover.ml");
 const account = new Likelib.Account("2aef91bc6d2df7c41bd605caa267e8d357e18b741c4a785e06650d649d650409");
 
 const abi = NFTArtifact.abi;
