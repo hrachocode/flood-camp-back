@@ -1,4 +1,4 @@
-import { BaseEntity, Column, Entity, OneToMany, PrimaryGeneratedColumn, Unique } from "typeorm";
+import { BaseEntity, Column, Entity, JoinColumn, OneToMany, OneToOne, PrimaryGeneratedColumn, Unique } from "typeorm";
 import * as bcrypt from 'bcrypt';
 import { EACs } from "src/eacs/dto/eacs.entity";
 import { Station } from "src/station/station.entity";
@@ -6,6 +6,7 @@ import { Organisation } from "src/organisation/dto/organisation.entity";
 
 @Entity()
 @Unique(['username'])
+@Unique(['organisation'])
 export class User extends BaseEntity {
 
     @PrimaryGeneratedColumn()
@@ -15,8 +16,9 @@ export class User extends BaseEntity {
     @Column()
     password: string;
 
-    // @Column()
-    // address: string;
+    @Column()
+    balance: number;
+
     @Column()
     privateKey: string;
 
@@ -28,8 +30,9 @@ export class User extends BaseEntity {
     @OneToMany(type => Station, station => station.user)
     stations: Station[];
 
-    @OneToMany(type => Organisation, organisation => organisation.user)
-    organisations: Organisation[];
+    @OneToOne(() => Organisation)
+    @JoinColumn()
+    organisation : Organisation
 
     async validatePassword(password: string): Promise<boolean> {
         const hash = await bcrypt.hash(password, this.salt);

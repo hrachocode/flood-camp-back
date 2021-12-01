@@ -2,6 +2,7 @@ import { Injectable, InternalServerErrorException, Logger, NotFoundException } f
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/auth/user.entity';
 import { Country } from './country.entity';
+import { CreateStationDto } from './dto/create-station.dto';
 import { GetStationFilterDto } from './dto/get-station-filter.dto';
 import { Region } from './region.entity';
 import { EEnergyType } from './station-energyType.enum';
@@ -61,7 +62,7 @@ export class StationService {
 
 
 
-    public async createStation(stationInput: Station, user: User): Promise<Station> {
+    public async createStation(stationInput: CreateStationDto, user: User): Promise<Station> {
 
         let station = this.stationRepository.create(stationInput);
      

@@ -1,6 +1,8 @@
 import { User } from "src/auth/user.entity";
-import { BaseEntity, Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { BaseEntity, Column, Entity, ManyToOne, PrimaryGeneratedColumn, Unique } from "typeorm";
 
+
+@Unique(['userId'])
 @Entity()
 export class Organisation extends BaseEntity {
 
@@ -12,9 +14,6 @@ export class Organisation extends BaseEntity {
     
     @Column()
     registerNumber: string;
-
-    @ManyToOne(type => User, user => user.organisations, { eager: false })
-    user: User;
 
     @Column()
     userId: number

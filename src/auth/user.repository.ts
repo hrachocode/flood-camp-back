@@ -1,4 +1,4 @@
-import { ConflictException, InternalServerErrorException } from "@nestjs/common";
+import { ConflictException, InternalServerErrorException, NotFoundException } from "@nestjs/common";
 import { EntityRepository, Repository } from "typeorm";
 import * as bcrypt from 'bcrypt';
 import { AuthCredentials } from "./dto/auth-credentilas.dto";
@@ -14,21 +14,18 @@ export class UserRepository extends Repository<User>{
 
     async signUp(authCredentialsDto: AuthCredentials): Promise<void> {
 
-        const { username, password } = authCredentialsDto;
+        const { username, password, balance } = authCredentialsDto;
         let web3 = new Web3(Web3.givenProvider || "ws://localhost:8545");
         const data = web3.eth.accounts.create();
 
         const user = new User();
         user.username = username;
+        user.balance = balance;
         user.salt = await bcrypt.genSalt();
         user.password = await this.hashPassword(password, user.salt);
-        // user.address = data?.address;
         user.privateKey = data?.privateKey;
 
         console.log(user.privateKey.substring(2));
-        // let account = new  Likelib.Account(user.privateKey.substring(2));
-        // console.log(account);
-        // console.log( user.address);
 
         try {
             await user.save()
@@ -38,12 +35,28 @@ export class UserRepository extends Repository<User>{
                 throw new ConflictException('Username alreday exists');
             }
             else {
+                console.log(error);
+                console.log(error.stack);
+
                 throw new InternalServerErrorException("User don't save");
             }
         }
 
     }
-    
+
+
+    public async getUserById(id: number): Promise<User> {
+
+        const found = await this.findOne(id);
+
+        if (!found) {
+            throw new NotFoundException(`User with ${id} not found `);
+        }
+
+        return found;
+
+    }
+
     async validateUserPassword(authCredentialsDto: AuthCredentials): Promise<string> {
 
         const { username, password } = authCredentialsDto;

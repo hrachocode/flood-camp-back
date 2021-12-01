@@ -1,6 +1,6 @@
 const Likelib = require('../likelib-js/likelib.js');
 
-let lk = new Likelib("ws://node.eacsclover.ml:50054");
+let lk = new Likelib("ws://node.eacsclover.ml");
 const account = new Likelib.Account("1d656a3dd121455faaad38837b9d966c3f86fc1af1f15202f445613bfcd29e45");
 
 console.log(lk.getAccountInfo(account.getAddress(), function(err, reply) {

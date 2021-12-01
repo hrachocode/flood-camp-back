@@ -4,6 +4,7 @@ import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { GetUser } from 'src/auth/get-user.decorator';
 import { User } from 'src/auth/user.entity';
 import { Country } from './country.entity';
+import { CreateStationDto } from './dto/create-station.dto';
 import { Region } from './region.entity';
 import { EEnergyType } from './station-energyType.enum';
 import { Station } from './station.entity';
@@ -44,7 +45,7 @@ export class StationController {
 
     @Post()
     // @ApiBearerAuth('access-token')
-    createStation(@Body(ValidationPipe) createStationDto: Station, @GetUser() user: User): Promise<Station> {
+    createStation(@Body(ValidationPipe) createStationDto: CreateStationDto, @GetUser() user: User): Promise<Station> {
 
         this.logger.verbose(`Creating new Station. Data : ${JSON.stringify(createStationDto)}`);
         return this.stationService.createStation(createStationDto, user);
