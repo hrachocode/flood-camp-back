@@ -18,15 +18,12 @@ export class CreateStationDto {
     supportGovernment: string;
 
     @IsNotEmpty({message : "Exploitation Start should not be empty"})
-    @IsDate()
     exploitationStart: Date;
 
     @IsNotEmpty({message:"Country should not be empty"})
-    @IsNumber()
     countryId: number;
 
     @IsNotEmpty({message:"Region should not be empty"})
-    @IsNumber()
     regionId: number;
 
 }

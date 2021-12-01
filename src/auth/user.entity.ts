@@ -1,8 +1,9 @@
-import { BaseEntity, Column, Entity, JoinColumn, OneToMany, OneToOne, PrimaryGeneratedColumn, Unique } from "typeorm";
+import { BaseEntity, Column, Entity, IsNull, JoinColumn, OneToMany, OneToOne, PrimaryGeneratedColumn, Unique } from "typeorm";
 import * as bcrypt from 'bcrypt';
 import { EACs } from "src/eacs/dto/eacs.entity";
 import { Station } from "src/station/station.entity";
 import { Organisation } from "src/organisation/dto/organisation.entity";
+import { IsOptional } from "class-validator";
 
 @Entity()
 @Unique(['username'])
@@ -16,7 +17,10 @@ export class User extends BaseEntity {
     @Column()
     password: string;
 
-    @Column()
+
+    @IsOptional()
+    
+    @Column('numeric', {default: 0.0})
     balance: number;
 
     @Column()
