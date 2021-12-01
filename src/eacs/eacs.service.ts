@@ -8,8 +8,6 @@ import { IsAskDto } from './dto/isAsk.dto';
 import { Ask } from './dto/ask.entity';
 import { BindsType } from './dto/bindsType.dto';
 import { CreateEACsDto } from './dto/create-eacs.dto';
-import { StationRepository } from 'src/station/station.repository';
-import { OrganisationRepository } from 'src/organisation/organisation.repository';
 import { StationService } from 'src/station/station.service';
 const NFTArtifact = require("./../../likelib_uton2/uton2/truffle/build/contracts/NFT.json");
 
@@ -21,7 +19,7 @@ export class EACsService {
     constructor(@InjectRepository(EACsRepository)
     private eacsRepository: EACsRepository,
         @InjectRepository(AskRepository)
-        private askRepository: AskRepository, 
+        private askRepository: AskRepository,
         private stationService: StationService) { }
 
     public async getAllEACs(user: User): Promise<EACs[]> {
@@ -127,101 +125,109 @@ export class EACsService {
 
     public async createEACs(eacsInput: CreateEACsDto, user: User): Promise<EACs> {
 
-        try {
 
-            let eacs = this.eacsRepository.create(eacsInput);
-            eacs.user = user;
-            if(!eacsInput.stationId){
-            eacs.station = (await this.stationService.getAllStations(user))[0];//this will changed,when fron was ready
+        let eacs = this.eacsRepository.create(eacsInput);
+        eacs.user = user;
+        if (!eacsInput.stationId) {
 
+            const currentStation = (await this.stationService.getAllStations(user))[0];
+
+
+            if (currentStation) {
+                eacs.station = currentStation;
             }
-            else{
-                eacs.station =  await this.stationService.getStationById(eacsInput.stationId,user);
+            else {
+                throw new InternalServerErrorException("created eacs must be have station");
             }
 
-            let account = new Likelib.Account("2aef91bc6d2df7c41bd605caa267e8d357e18b741c4a785e06650d649d650409");//(user.privateKey.substring(2));
-            let lk = new Likelib("ws://node.eacsclover.ml");
 
-            const recipient = new Likelib.Account("c4233ff3dbdea94a8c9c076be53e71f36f0c788e4feaac288e53b2f65ef99c85");
-
-            eacs.fromAddress = account.getAddress();
-            eacs.toAddress = recipient.getAddress();
-
-            const tx = new Likelib.Tx({
-                from: account.getAddress(),
-                to: recipient.getAddress(),
-                amount: eacsInput.energyAmount,
-                fee: 10000,
-                data: "".toString()
-            });
-
-            account.sign(tx);
-
-            const accountTrasaction: any = () => {
-                return new Promise((res, rej) => {
-                    lk.pushTransaction(tx, function (err, reply) {
-                        if (err) {
-                            console.log(err);
-                            rej(err)
-                        }
-                        else if (reply.status_code == Likelib.Tx.Status.Pending) {
-                            return;
-                        }
-                        else if (reply.status_code != Likelib.Tx.Status.Success) {
-                            console.log(reply);
-                            console.log("Transfer failed with status code " + reply.status_code);
-                        }
-                        else {
-                            res(reply.fee_left)
-                            console.log("Fee left ", reply.fee_left);
-                        }
-                    })
-                }
-                );
-            };
-            await accountTrasaction();
-
-            const abi = NFTArtifact.abi;
-            const compiled = NFTArtifact.bytecode.slice(2);
-
-
-            let contract = Likelib.Contract.nondeployed(lk, account, abi, compiled);
-
-            const contractDeploy: any = () => {
-                return new Promise((res, rej) => {
-
-                    // setInterval(() => {
-                    //     return new NotFoundException("During Contract deploy server doesn't response long time , Please run again")
-                    // }, 1800 * 1000)
-
-
-                    contract.deploy(10, 1636539480, 1636971480, 0, 1000000, function (err, fee_left) {
-                        if (err) {
-                            console.log("Error during deployment: " + err);
-                            rej(err)
-                        }
-                        else {
-                            res(contract._address)
-                            console.log("Contract was successfully deployed fee_left: " + fee_left);
-                            console.log("Contract address: " + contract._address + " Set it address in contract call");
-
-                        }
-                    });
-                });
-            };
-
-            eacs.contractAddress = await contractDeploy();
-            await eacs.save();
-            delete eacs.user;
-            return eacs;
-
-        } catch (error) {
-
-            console.log(error);
-            console.log(error.stack);
-
-            throw new InternalServerErrorException("Organisation don't save");
         }
+        else {
+            eacs.station = await this.stationService.getStationById(eacsInput.stationId, user);
+        }
+
+        let account = new Likelib.Account("2aef91bc6d2df7c41bd605caa267e8d357e18b741c4a785e06650d649d650409");//(user.privateKey.substring(2));
+        let lk = new Likelib("ws://node.eacsclover.ml");
+
+        const recipient = new Likelib.Account("c4233ff3dbdea94a8c9c076be53e71f36f0c788e4feaac288e53b2f65ef99c85");
+
+        eacs.fromAddress = account.getAddress();
+        eacs.toAddress = recipient.getAddress();
+
+        const tx = new Likelib.Tx({
+            from: account.getAddress(),
+            to: recipient.getAddress(),
+            amount: eacsInput.energyAmount,
+            fee: 10000,
+            data: "".toString()
+        });
+
+        account.sign(tx);
+
+        const accountTrasaction: any = () => {
+            return new Promise((res, rej) => {
+                lk.pushTransaction(tx, function (err, reply) {
+                    if (err) {
+                        console.log(err);
+                        rej(err)
+                    }
+                    else if (reply.status_code == Likelib.Tx.Status.Pending) {
+                        return;
+                    }
+                    else if (reply.status_code != Likelib.Tx.Status.Success) {
+                        console.log(reply);
+                        console.log("Transfer failed with status code " + reply.status_code);
+                    }
+                    else {
+                        res(reply.fee_left)
+                        console.log("Fee left ", reply.fee_left);
+                    }
+                })
+            }
+            );
+        };
+        await accountTrasaction();
+
+        const abi = NFTArtifact.abi;
+        const compiled = NFTArtifact.bytecode.slice(2);
+
+
+        let contract = Likelib.Contract.nondeployed(lk, account, abi, compiled);
+
+        const contractDeploy: any = () => {
+            return new Promise((res, rej) => {
+
+                // setInterval(() => {
+                //     return new NotFoundException("During Contract deploy server doesn't response long time , Please run again")
+                // }, 1800 * 1000)
+
+
+                contract.deploy(10, 1636539480, 1636971480, 0, 1000000, function (err, fee_left, status) {
+
+                    // if(status==1){
+                    //     rej({message:'please wait'});
+                    // }
+                    if (err) {
+                        console.log("Error during deployment: " + err);
+                        rej(err)
+                    }
+
+                    else {
+                        res(contract._address)
+                        console.log("Contract was successfully deployed fee_left: " + fee_left);
+                        console.log("Contract address: " + contract._address + " Set it address in contract call");
+
+                    }
+                });
+            });
+        };
+
+        eacs.contractAddress = await contractDeploy();
+
+        await eacs.save();
+        delete eacs.user;
+        return eacs;
+
     }
 
 
