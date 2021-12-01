@@ -67,9 +67,12 @@ export class StationService {
         let station = this.stationRepository.create(stationInput);
      
         try {
-            station.user = user;
+            station.userId = user.id;
+
+            console.log("user",user);
+            console.log(" user.organisation", user.organisation);
+            station.organisation =  user.organisation;
             await station.save();
-            delete station.user;
         } catch (error) {
 
             this.logger.error(`Failed to create a station`, error.stack)
@@ -92,8 +95,6 @@ export class StationService {
         }
 
     }
-
-
 
     public async updateStationType(id: number, energyType: EEnergyType, user: User): Promise<Station> {
 

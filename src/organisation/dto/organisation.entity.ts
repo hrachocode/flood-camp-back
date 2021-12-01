@@ -1,5 +1,6 @@
 import { User } from "src/auth/user.entity";
-import { BaseEntity, Column, Entity, ManyToOne, PrimaryGeneratedColumn, Unique } from "typeorm";
+import { Station } from "src/station/station.entity";
+import { BaseEntity, Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn, Unique } from "typeorm";
 
 
 @Unique(['userId'])
@@ -17,4 +18,7 @@ export class Organisation extends BaseEntity {
 
     @Column()
     userId: number
+
+    @OneToMany(type => Station, station => station.organisation)
+    stations: Station[];
 }

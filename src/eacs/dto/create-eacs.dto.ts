@@ -1,4 +1,4 @@
-import { IsDate, IsNotEmpty, IsNumber } from "class-validator";
+import { IsNotEmpty, IsNumber, IsOptional } from "class-validator";
 
 export class CreateEACsDto {
 
@@ -11,5 +11,8 @@ export class CreateEACsDto {
     @IsNotEmpty({message : "Energy Amount should not be empty"})
     @IsNumber()
     energyAmount: number;
+
+    @IsOptional()
+    stationId: number;
 
 }

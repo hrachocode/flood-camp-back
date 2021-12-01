@@ -1,7 +1,6 @@
 import { BaseEntity, Column, Entity, IsNull, JoinColumn, OneToMany, OneToOne, PrimaryGeneratedColumn, Unique } from "typeorm";
 import * as bcrypt from 'bcrypt';
 import { EACs } from "src/eacs/dto/eacs.entity";
-import { Station } from "src/station/station.entity";
 import { Organisation } from "src/organisation/dto/organisation.entity";
 import { IsOptional } from "class-validator";
 
@@ -31,10 +30,7 @@ export class User extends BaseEntity {
     @OneToMany(type => EACs, eacs => eacs.user)
     eacs: EACs[];
 
-    @OneToMany(type => Station, station => station.user)
-    stations: Station[];
-
-    @OneToOne(() => Organisation)
+    @OneToOne(() => Organisation, {eager:true})
     @JoinColumn()
     organisation : Organisation
 

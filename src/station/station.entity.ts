@@ -1,8 +1,8 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { User } from "src/auth/user.entity";
-import { BaseEntity, Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
-import { Country } from "./country.entity";
-import { Region } from "./region.entity";
+import { EACs } from "src/eacs/dto/eacs.entity";
+import { Organisation } from "src/organisation/dto/organisation.entity";
+import { BaseEntity, Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import { EEnergyType } from "./station-energyType.enum";
 
 
@@ -34,8 +34,10 @@ export class Station extends BaseEntity {
     @ApiProperty({ example: 1 })
     @Column()
     regionId: Number;
-    @ManyToOne(type => User, user => user.stations, { eager: false })
-    user: User;
+    @ManyToOne(type => Organisation, organisation => organisation.stations, { eager: false })
+    organisation: Organisation;
+    @OneToMany(type => EACs, eacs => eacs.station)
+    eacs: EACs[];
     @Column()
     userId: number
 }

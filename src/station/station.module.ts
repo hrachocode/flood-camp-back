@@ -10,6 +10,7 @@ import { StationService } from './station.service';
     TypeOrmModule.forFeature([StationRepository, CountryRepository, RegionRepository]),
     AuthModule
   ],
+  exports:[StationService],
   controllers: [StationController],
   providers: [StationService]
 })

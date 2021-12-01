@@ -1,4 +1,5 @@
 import { User } from "src/auth/user.entity";
+import { Station } from "src/station/station.entity";
 import { BaseEntity, Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import { Ask } from "./ask.entity";
 
@@ -40,6 +41,8 @@ export class EACs extends BaseEntity {
 
   @ManyToOne(type => User, user => user.eacs, { eager: false })
   user: User;
+  @ManyToOne(type => Station, station => station.eacs, { eager: false })
+  station: Station;
 
   @Column()
   userId: number;
