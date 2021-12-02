@@ -1,4 +1,5 @@
-import { IsNotEmpty, IsNumber, IsOptional } from "class-validator";
+import { Transform, Type } from "class-transformer";
+import { IsInt, IsNotEmpty, IsNumber, IsOptional } from "class-validator";
 
 export class CreateEACsDto {
 
@@ -10,6 +11,7 @@ export class CreateEACsDto {
 
     @IsNotEmpty({message : "Energy Amount should not be empty"})
     @IsNumber()
+    @Type(() => Number)
     energyAmount: number;
 
     @IsOptional()

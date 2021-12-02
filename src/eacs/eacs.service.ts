@@ -202,7 +202,7 @@ export class EACsService {
                 // }, 1800 * 1000)
 
 
-                contract.deploy(10, 1636539480, 1636971480, 0, 1000000, function (err, fee_left, status) {
+                contract.deploy(10, 1636539480, 1636971480, 0, 1000000, function (err, fee_left ) {//status
 
                     // if(status==1){
                     //     rej({message:'please wait'});
