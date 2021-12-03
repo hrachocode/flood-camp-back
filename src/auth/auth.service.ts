@@ -27,16 +27,22 @@ export class AuthService {
         }
 
         const payload: JwtPayLoad = { username };
-        const accessToken =  this.jwtService.sign(payload);
+        const accessToken = this.jwtService.sign(payload);
         this.logger.debug(`Generated JWT Token with payload ${JSON.stringify(payload)}`)
         return { accessToken };
     }
 
-        public async updateUserBalance(id: number, balance : number ): Promise<User> {
+    public async updateUserBalance(id: number, balance: number): Promise<User> {
 
         const updatedUser = await this.userRepository.updateUserBalance(id, balance);
-      
+
 
         return updatedUser;
+    }
+
+
+    public async getUserBalanceById(id: number): Promise<number> {
+
+        return await this.userRepository.getUserBalanceById(id);
     }
 }

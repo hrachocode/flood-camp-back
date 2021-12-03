@@ -90,6 +90,16 @@ export class UserRepository extends Repository<User>{
         }
     }
 
+
+    public async getUserBalanceById(id: number): Promise<number> {
+
+        this.logger.verbose(`get  user   ${id} balance `);
+
+        const found = await this.getUserById(id);
+
+        return found?.balance;
+    }
+
     private async hashPassword(password: string, salt: string): Promise<string> {
         return bcrypt.hash(password, salt);
     }

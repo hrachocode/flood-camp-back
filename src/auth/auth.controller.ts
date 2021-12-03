@@ -1,4 +1,4 @@
-import { Body, Controller, Param, ParseFloatPipe, Patch, Post, UsePipes, ValidationPipe } from '@nestjs/common';
+import { Body, Controller, Get, Param, ParseFloatPipe, Patch, Post, UsePipes, ValidationPipe } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
 import { AuthCredentials } from './dto/auth-credentilas.dto';
@@ -28,6 +28,11 @@ export class AuthController {
 
         return this.authService.updateUserBalance(id, balance);
 
+    }
+
+    @Get('/userBalance/:id')
+    getUserBalanceById(@Param('id') id: number): Promise<number> {
+        return this.authService.getUserBalanceById(id);
     }
 
 }

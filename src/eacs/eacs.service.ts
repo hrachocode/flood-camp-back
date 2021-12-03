@@ -8,7 +8,6 @@ import { IsAskDto } from './dto/isAsk.dto';
 import { Ask } from './dto/ask.entity';
 import { CreateEACsDto } from './dto/create-eacs.dto';
 import { StationService } from 'src/station/station.service';
-import { AuthService } from 'src/auth/auth.service';
 import { BindsTypeDto } from './dto/bindsType.dto';
 const NFTArtifact = require("./../../likelib_uton2/uton2/truffle/build/contracts/NFT.json");
 
