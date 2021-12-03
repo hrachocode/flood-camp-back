@@ -1,7 +1,9 @@
-import { Body, Controller, Get, Param, ParseFloatPipe, Patch, Post, UsePipes, ValidationPipe } from '@nestjs/common';
+import { Body, Controller, Get, Param, ParseFloatPipe, Patch, Post, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
 import { ApiTags } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
 import { AuthCredentials } from './dto/auth-credentilas.dto';
+import { GetUser } from './get-user.decorator';
 import { User } from './user.entity';
 
 
@@ -30,9 +32,10 @@ export class AuthController {
 
     }
 
-    @Get('/userBalance/:id')
-    getUserBalanceById(@Param('id') id: number): Promise<number> {
-        return this.authService.getUserBalanceById(id);
+    @UseGuards(AuthGuard())
+    @Get('/userBalance/')
+    getUserBalanceById(@GetUser() user: User): Promise<number> {
+        return this.authService.getUserBalance(user);
     }
 
 }

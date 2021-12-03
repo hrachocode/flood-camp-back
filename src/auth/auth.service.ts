@@ -41,8 +41,8 @@ export class AuthService {
     }
 
 
-    public async getUserBalanceById(id: number): Promise<number> {
+    public async getUserBalance(user :User): Promise<number> {
 
-        return await this.userRepository.getUserBalanceById(id);
+        return await this.userRepository.getUserBalance(user);
     }
 }

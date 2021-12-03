@@ -91,13 +91,11 @@ export class UserRepository extends Repository<User>{
     }
 
 
-    public async getUserBalanceById(id: number): Promise<number> {
+    public async getUserBalance( user: User): Promise<number> {
 
-        this.logger.verbose(`get  user   ${id} balance `);
+        this.logger.verbose(`get  user   ${user.id} balance `);
 
-        const found = await this.getUserById(id);
-
-        return found?.balance;
+        return user.balance;
     }
 
     private async hashPassword(password: string, salt: string): Promise<string> {
