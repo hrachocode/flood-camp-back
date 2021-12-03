@@ -4,7 +4,7 @@ import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { GetUser } from 'src/auth/get-user.decorator';
 import { User } from 'src/auth/user.entity';
 import { Ask } from './dto/ask.entity';
-import { BindsType } from './dto/bindsType.dto';
+import { BindsTypeDto } from './dto/bindsType.dto';
 import { CreateEACsDto } from './dto/create-eacs.dto';
 import { EACs } from './dto/eacs.entity';
 import { IsAskDto } from './dto/isAsk.dto';
@@ -50,7 +50,7 @@ export class EACsController {
 
     @Post('/eacsBind/')
     @UsePipes(ValidationPipe)
-    bindAskEACs(@Body() bindsType: BindsType, @GetUser() user: User): Promise<Ask> {
+    bindAskEACs(@Body() bindsType: BindsTypeDto, @GetUser() user: User): Promise<Ask> {
 
         return this.eacsService.bindAskEACs(bindsType, user);
     }

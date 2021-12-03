@@ -1,6 +1,6 @@
 import { IsNumber, IsOptional } from "class-validator";
 
-export class BindsType {
+export class BindsTypeDto {
 
     @IsNumber()
     eacsId: number;

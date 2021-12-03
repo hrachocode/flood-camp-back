@@ -1,4 +1,4 @@
-import { ConflictException, InternalServerErrorException, NotFoundException } from "@nestjs/common";
+import { ConflictException, InternalServerErrorException, Logger, NotFoundException } from "@nestjs/common";
 import { EntityRepository, Repository } from "typeorm";
 import * as bcrypt from 'bcrypt';
 import { AuthCredentials } from "./dto/auth-credentilas.dto";
@@ -11,7 +11,7 @@ const Web3 = require("web3");
 @EntityRepository(User)
 export class UserRepository extends Repository<User>{
 
-
+    private logger = new Logger('UserReposisory');
     async signUp(authCredentialsDto: AuthCredentials): Promise<void> {
 
         const { username, password, balance } = authCredentialsDto;
@@ -25,7 +25,7 @@ export class UserRepository extends Repository<User>{
         user.password = await this.hashPassword(password, user.salt);
         user.privateKey = data?.privateKey;
 
-        console.log(user.privateKey.substring(2));
+        //console.log(user.privateKey.substring(2));
 
         try {
             await user.save()
@@ -55,6 +55,27 @@ export class UserRepository extends Repository<User>{
 
         return found;
 
+    }
+
+    public async updateUserBalance(id: number, balance: number): Promise<User> {
+
+        this.logger.verbose(`Updating  user   ${id} balance ${balance}`);
+
+        const found = await this.getUserById(id);
+
+        found.balance = (+found.balance) + balance;
+
+        try {
+
+            await found.save();
+
+        } catch (error) {
+            this.logger.error(`Failed to update  user balance`, error.stack)
+            throw new InternalServerErrorException();
+        }
+
+
+        return found;
     }
 
     async validateUserPassword(authCredentialsDto: AuthCredentials): Promise<string> {

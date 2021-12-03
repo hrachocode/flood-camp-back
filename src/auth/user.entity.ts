@@ -19,7 +19,7 @@ export class User extends BaseEntity {
 
     @IsOptional()
     
-    @Column('numeric', {default: 0.0})
+    @Column('numeric', {default: 5000.0})
     balance: number;
 
     @Column()

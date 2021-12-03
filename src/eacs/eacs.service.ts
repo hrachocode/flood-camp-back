@@ -6,9 +6,10 @@ import { AskRepository, EACsRepository } from './eacs.repository';
 import * as Likelib from "./../../likelib_uton2/likelib-js/likelib.js"
 import { IsAskDto } from './dto/isAsk.dto';
 import { Ask } from './dto/ask.entity';
-import { BindsType } from './dto/bindsType.dto';
 import { CreateEACsDto } from './dto/create-eacs.dto';
 import { StationService } from 'src/station/station.service';
+import { AuthService } from 'src/auth/auth.service';
+import { BindsTypeDto } from './dto/bindsType.dto';
 const NFTArtifact = require("./../../likelib_uton2/uton2/truffle/build/contracts/NFT.json");
 
 @Injectable()
@@ -76,24 +77,38 @@ export class EACsService {
 
     }
 
-    public async bindAskEACs(bindsType: BindsType, user: User): Promise<Ask> {
+    public async bindAskEACs(bindsTypeDto: BindsTypeDto, user: User): Promise<Ask> {
 
-        const ask = await this.getAskByEACsUserId(bindsType.eacsId, user.id);
 
+
+        const ask = await this.getAskByEACsUserId(bindsTypeDto.eacsId, user.id);
+        
 
         if (ask) {
+            const  diffBalance = bindsTypeDto.price-ask.price;
 
-            ask.eacsId = bindsType.eacsId;
+            if(user.balance<diffBalance){
+                throw new InternalServerErrorException("please check your balance");
+            }
+            ask.eacsId = bindsTypeDto.eacsId;
             ask.userId = user.id;
-            ask.price = bindsType.price;
+            ask.price = bindsTypeDto.price;
             ask.userName = user.username;
             await ask.save();
+            user.balance = (+user.balance)-diffBalance;
+            user.save();
         }
 
         else {
 
-            let ask = this.askRepository.create({ eacsId: bindsType.eacsId, userId: user.id, userName: user.username, price: bindsType.price });
+            if(user.balance<bindsTypeDto.price){
+                throw new InternalServerErrorException("please check your balance");
+            }
+
+            let ask = this.askRepository.create({ eacsId: bindsTypeDto.eacsId, userId: user.id, userName: user.username, price: bindsTypeDto.price });
             await ask.save();
+            user.balance = (+user.balance)-bindsTypeDto.price;
+            user.save();
         }
 
         return ask;
@@ -202,7 +217,7 @@ export class EACsService {
                 // }, 1800 * 1000)
 
 
-                contract.deploy(10, 1636539480, 1636971480, 0, 1000000, function (err, fee_left ) {//status
+                contract.deploy(10, 1636539480, 1636971480, 0, 1000000, async function (err, fee_left ) {//status
 
                     // if(status==1){
                     //     rej({message:'please wait'});
@@ -216,21 +231,19 @@ export class EACsService {
                         res(contract._address)
                         console.log("Contract was successfully deployed fee_left: " + fee_left);
                         console.log("Contract address: " + contract._address + " Set it address in contract call");
-
+                        eacs.contractAddress =contract._address;
                     }
                 });
             });
         };
-
-        eacs.contractAddress = await contractDeploy();
+   
+        await contractDeploy();
 
         await eacs.save();
         delete eacs.user;
         return eacs;
 
     }
-
-
 
 
     public async deleteEACs(id: number, user: User): Promise<void> {
