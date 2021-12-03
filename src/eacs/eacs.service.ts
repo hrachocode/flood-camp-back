@@ -9,6 +9,7 @@ import { Ask } from './dto/ask.entity';
 import { CreateEACsDto } from './dto/create-eacs.dto';
 import { StationService } from 'src/station/station.service';
 import { BindsTypeDto } from './dto/bindsType.dto';
+import { AuthService } from 'src/auth/auth.service';
 const NFTArtifact = require("./../../likelib_uton2/uton2/truffle/build/contracts/NFT.json");
 
 @Injectable()
@@ -20,7 +21,8 @@ export class EACsService {
     private eacsRepository: EACsRepository,
         @InjectRepository(AskRepository)
         private askRepository: AskRepository,
-        private stationService: StationService) { }
+        private stationService: StationService,
+        private authService: AuthService) { }
 
     public async getAllEACs(user: User): Promise<EACs[]> {
 
@@ -56,7 +58,7 @@ export class EACsService {
 
     }
 
-    public async getBindEACsById(id: number, user: User): Promise<Ask[]> {
+    public async getBindEACsById(id: number): Promise<Ask[]> {
 
         const query = this.askRepository.createQueryBuilder('ask');
         query.where('ask.eacsId = :eacsId', { eacsId: id })
@@ -81,12 +83,12 @@ export class EACsService {
 
 
         const ask = await this.getAskByEACsUserId(bindsTypeDto.eacsId, user.id);
-        
+
 
         if (ask) {
-            const  diffBalance = bindsTypeDto.price-ask.price;
+            const diffBalance = bindsTypeDto.price - ask.price;
 
-            if(user.balance<diffBalance){
+            if (user.balance < diffBalance) {
                 throw new InternalServerErrorException("please check your balance");
             }
             ask.eacsId = bindsTypeDto.eacsId;
@@ -94,19 +96,19 @@ export class EACsService {
             ask.price = bindsTypeDto.price;
             ask.userName = user.username;
             await ask.save();
-            user.balance = (+user.balance)-diffBalance;
+            user.balance = (+user.balance) - diffBalance;
             user.save();
         }
 
         else {
 
-            if(user.balance<bindsTypeDto.price){
+            if (user.balance < bindsTypeDto.price) {
                 throw new InternalServerErrorException("please check your balance");
             }
 
             let ask = this.askRepository.create({ eacsId: bindsTypeDto.eacsId, userId: user.id, userName: user.username, price: bindsTypeDto.price });
             await ask.save();
-            user.balance = (+user.balance)-bindsTypeDto.price;
+            user.balance = (+user.balance) - bindsTypeDto.price;
             user.save();
         }
 
@@ -216,7 +218,7 @@ export class EACsService {
                 // }, 1800 * 1000)
 
 
-                contract.deploy(10, 1636539480, 1636971480, 0, 1000000, async function (err, fee_left ) {//status
+                contract.deploy(10, 1636539480, 1636971480, 0, 1000000, async function (err, fee_left) {//status
 
                     // if(status==1){
                     //     rej({message:'please wait'});
@@ -230,12 +232,12 @@ export class EACsService {
                         res(contract._address)
                         console.log("Contract was successfully deployed fee_left: " + fee_left);
                         console.log("Contract address: " + contract._address + " Set it address in contract call");
-                        eacs.contractAddress =contract._address;
+                        eacs.contractAddress = contract._address;
                     }
                 });
             });
         };
-   
+
         await contractDeploy();
 
         await eacs.save();
@@ -289,9 +291,32 @@ export class EACsService {
     public async confirmAskEACs(id: number, user: User): Promise<EACs> {
 
 
-        const updatedBids = await this.getAskById(id);
+        const updatedBid = await this.getAskById(id);
+        console.log("updatedBids", updatedBid);
 
-        const updatedEACs = await this.getEACsById(updatedBids.eacsId, user);
+
+        const updatedEACs = await this.getEACsById(updatedBid.eacsId, user);
+        console.log("updatedEACs", updatedEACs);
+
+        console.log("====================================");
+
+        const eacsBids = (await this.getBindEACsById(updatedBid.eacsId)).filter((el) => el.userId == updatedBid.id);
+        console.log("eacsBids", eacsBids);
+
+        eacsBids.forEach(async element => {
+            await this.authService.updateUserBalance(element.userId, element.price)
+        });
+
+
+        //  buyer balance increse  by 0,this row can deleted
+        await this.authService.updateUserBalance(updatedBid.userId, 0);
+        console.log("eacsBids", eacsBids);
+
+
+        //seller decrese
+        await this.authService.updateUserBalance(user.id, updatedBid.price);
+
+
         updatedEACs.isArchive = true;
 
         try {
@@ -308,7 +333,7 @@ export class EACsService {
             const query = this.askRepository.createQueryBuilder('ask');
             await query.update()
                 .set({ isArchive: true })
-                .where(`eacsId = :eacsId`, { eacsId: updatedBids.eacsId })
+                .where(`eacsId = :eacsId`, { eacsId: updatedBid.eacsId })
                 .execute();
 
         } catch (error) {

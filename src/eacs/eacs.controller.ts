@@ -67,7 +67,7 @@ export class EACsController {
 
     @Get('/bindEACs/:id')
     getBindEACsById(@Param('id') id: number, @GetUser() user: User): Promise<Ask[]> {
-        return this.eacsService.getBindEACsById(id, user);
+        return this.eacsService.getBindEACsById(id);
     }
 
     @Delete(':id')
